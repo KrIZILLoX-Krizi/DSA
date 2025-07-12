@@ -52,7 +52,7 @@ int memoization_fibonacci(int n, vector<int>& memoize_dp)
 // SC: O(n + n) // call stack space + extra array
 // ---------------------------------------------
 
-
+// two vars method for fibonacci problem
 int two_vars_fibonacci(int n)
 {
   // storing values for first and second element
@@ -75,6 +75,10 @@ int two_vars_fibonacci(int n)
 
   return res;
 }
+// ---------------------------------------------
+// TC: O(n)
+// SC: O(1)
+// ---------------------------------------------
 
 // driver method
 void fibonacci(int n)
