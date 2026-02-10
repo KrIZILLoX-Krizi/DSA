@@ -14,6 +14,56 @@ string prefixToPostfix ()
 
 }
 
+int operateOver(int op2, int op1, char optr)
+{
+  if (optr == '*') return op1 * op2;
+  if (optr == '-') return op1 - op2;
+  if (optr == '+') return op1 + op2;
+  if (optr == '/') return op1 / op2;
+  if (optr == '^') return pow(op1, op2);
+}
+
+int resolvePostfix (string postfix)
+{
+  stack<int> st;
+
+  for (int i = 0; i < postfix.size(); ++i)
+  {
+    // if operand, push to stack
+    if (postfix[i] > 47 && postfix[i] < 58)
+    {
+    #ifdef DEBUG
+    cout << "operand: " << postfix[i] << endl;
+    #endif
+      st.push(postfix[i] - 48);
+      continue;
+    }
+
+    // if operator, pop stack 2 times and operate
+    if (postfix[i] == '*' || postfix[i] == '+' || postfix[i] == '-' || postfix[i] == '/' || postfix[i] == '^')
+    {
+      int operand1, operand2 = 0;
+
+      operand1 = st.top();
+      st.pop();
+      operand2 = st.top();
+      st.pop();
+
+    #ifdef DEBUG
+    cout << "op1: " << operand1 << " op2: " << operand2 << " optr: " << postfix[i] << endl;
+    #endif
+
+      // push intermediary res in stack
+      st.push(operateOver(operand1, operand2, postfix[i]));
+    #ifdef DEBUG
+    cout << "top res: " << st.top() << endl;
+    #endif
+    }
+  }
+
+  return st.top();
+}
+
 string postfixToPrefix (string str)
 {
   stack<char> st;
@@ -35,7 +85,8 @@ string postfixToPrefix (string str)
 
 bool getPrecedence (char optr)
 {
-  if (optr == '^') return 3;
+  if (optr == '(') return 0;
+  else if (optr == '^') return 3;
   else if (optr == '*' || optr == '/') return 2;
   else if (optr == '+' || optr == '-') return 1;
 }
@@ -65,6 +116,9 @@ string infixToPostfix (string str)
     {
       postfix += str[i];
       ++i;
+    #ifdef DEBUG
+    cout << "append postfix | postfix: " << postfix << endl;
+    #endif
       continue; // process next feed
     }
 
@@ -74,9 +128,13 @@ string infixToPostfix (string str)
     #ifdef DEBUG
     cout << "open paren | str[i]: " << str[i] << " i: " << i << endl;
     #endif
-      // append
-      postfix += str[i];
+      // push onto stack
+      st.push(str[i]);
       ++i;
+    #ifdef DEBUG
+    cout << "stack top: " << st.top() << endl;
+    cout << "postfix: " << postfix << endl;
+    #endif
       continue;
     }
     else if (str[i] == ')')
@@ -93,6 +151,8 @@ string infixToPostfix (string str)
     cout << "postfix | postfix: " << postfix << endl;
     #endif
       }
+      // discard open paren
+      st.pop();
       ++i;
       continue;
     }
@@ -160,9 +220,43 @@ void TC1 ()
   cout << "==TC1==end===============" << endl;
 }
 
+// TC 2
+//===================
+void TC2 ()
+{
+  string str = "2+(3-4)";
+  cout << "==TC2==begin=============" << endl;
+  cout << str << endl;
+  cout << infixToPostfix(str) << endl;
+  cout << "==TC2==end===============" << endl;
+}
+
+// TC 3
+//===================
+void TC3 ()
+{
+  string str = "234-+";
+  cout << "==TC3==begin=============" << endl;
+  cout << str << endl;
+  cout << resolvePostfix(str) << endl;
+  cout << "==TC3==end===============" << endl;
+}
+
+// TC 4
+//===================
+void TC4 ()
+{
+  string str = "22^33^+42^-";
+  cout << "==TC4==begin=============" << endl;
+  cout << str << endl;
+  cout << resolvePostfix(str) << endl;
+  cout << "==TC4==end===============" << endl;
+}
+
 int main(void)
 {
-  TC1();
+  TC3();
+  TC4();
 
   return 1;
 }
